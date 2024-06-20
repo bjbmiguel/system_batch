@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOG_FILE_NAME" value="systemBatch"/>
+
+    <springProfile name="dev">
+        <property name="LOG_DIR" value="C:\Users\bruno.banguela\logs"/>
+    </springProfile>
+
+    <!-- /var/log/validationLayer -->
+    <springProfile name="prod">
+        <property name="LOG_DIR" value="/var/log/system_batch"/>
+    </springProfile>
+
+    <!-- Define the appenders -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+
+        <file>${LOG_DIR}${file.separator}${LOG_FILE_NAME}.log</file>
+
+        <encoder>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} [%thread] %-5level-%msg%n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_DIR}${file.separator}archived${file.separator}${LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!--Max Size of file to start Archive -->
+                <maxFileSize>20MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+
+            <!-- Days till log history to keep -->
+            <maxHistory>7</maxHistory>
+            <!-- total size of all archive files, if total size > 1GB, it will delete old archived file -->
+            <totalSizeCap>1GB</totalSizeCap>
+            <!--Cleans up old log files that exceed the 7-day retention period upon application startup -->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+    </appender>
+
+    <!-- Configuração para o perfil de desenvolvimento -->
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+        </root>
+
+        <logger name="ao.co.unitel.dl.dsi.dqsso.oss.system_batch" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE" />
+            <!-- <appender-ref ref="FILE" /> -->
+        </logger>
+
+
+    </springProfile>
+
+    <!-- Configuração para o perfil de produção -->
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+        </root>
+
+        <!-- <logger name="ao.co.unitel.dl.dsi.dqsso.oss" level="INFO" additivity="false">
+             <appender-ref ref="FILE" />
+         </logger>
+       -->
+    </springProfile>
+
+</configuration>
