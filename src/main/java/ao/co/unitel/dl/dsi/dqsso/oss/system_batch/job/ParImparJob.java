@@ -8,7 +8,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class ParImparJob {
 
     @Bean //Significa que este método produz um bean que será gerenciado pelo Spring...
